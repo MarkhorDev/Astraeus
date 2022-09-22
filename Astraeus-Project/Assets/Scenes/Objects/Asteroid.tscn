@@ -1,0 +1,67 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://Assets/Scripts/AsteroidScripts/Asteroid.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Sprites/Asteroids/Large/largeAsteroid01.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Sprites/Asteroids/Small/smallAsteroid01.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Sprites/Asteroids/Large/largeAsteroid02.png" type="Texture" id=4]
+[ext_resource path="res://Assets/Sprites/Asteroids/Large/largeAsteroid03.png" type="Texture" id=5]
+[ext_resource path="res://Assets/Sprites/Asteroids/Large/largeAsteroid04.png" type="Texture" id=6]
+[ext_resource path="res://Assets/Sprites/Asteroids/Small/smallAsteroid02.png" type="Texture" id=7]
+[ext_resource path="res://Assets/Sprites/Asteroids/Small/smallAsteroid04.png" type="Texture" id=8]
+[ext_resource path="res://Assets/Sprites/Asteroids/Small/smallAsteroid03.png" type="Texture" id=9]
+
+[sub_resource type="SpriteFrames" id=3]
+animations = [ {
+"frames": [ ExtResource( 2 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 6 ) ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+} ]
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 27.0
+
+[sub_resource type="SpriteFrames" id=4]
+animations = [ {
+"frames": [ ExtResource( 3 ), ExtResource( 7 ), ExtResource( 9 ), ExtResource( 8 ) ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+} ]
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 17.0
+
+[node name="Asteroid" type="Node2D" groups=["Asteroid"]]
+script = ExtResource( 1 )
+moveSpeedRange = Vector2( 50, 100 )
+moveDirectionOffsetRange = Vector2( -250, 250 )
+rotationSpeedRange = Vector2( 10, 60 )
+
+[node name="VisibilityBox" type="VisibilityNotifier2D" parent="."]
+
+[node name="LargeAsteroid" type="Area2D" parent="." groups=["Asteroid"]]
+collision_layer = 4
+collision_mask = 2
+
+[node name="Sprite" type="AnimatedSprite" parent="LargeAsteroid"]
+frames = SubResource( 3 )
+speed_scale = 0.0
+
+[node name="Collider" type="CollisionShape2D" parent="LargeAsteroid"]
+shape = SubResource( 1 )
+
+[node name="SmallAsteroid" type="Area2D" parent="." groups=["Asteroid"]]
+collision_layer = 8
+collision_mask = 2
+
+[node name="Sprite" type="AnimatedSprite" parent="SmallAsteroid"]
+frames = SubResource( 4 )
+speed_scale = 0.0
+
+[node name="Collider" type="CollisionShape2D" parent="SmallAsteroid"]
+shape = SubResource( 2 )
+
+[connection signal="viewport_exited" from="VisibilityBox" to="." method="_on_VisibilityBox_viewport_exited"]
+[connection signal="area_entered" from="LargeAsteroid" to="." method="_on_LargeAsteroid_area_entered" flags=3]
+[connection signal="area_entered" from="SmallAsteroid" to="." method="_on_SmallAsteroid_area_entered" flags=3]

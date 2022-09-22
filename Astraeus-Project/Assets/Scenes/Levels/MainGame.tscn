@@ -1,0 +1,1362 @@
+[gd_scene load_steps=46 format=2]
+
+[ext_resource path="res://Assets/Scenes/Objects/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Assets/Scripts/AsteroidScripts/AsteroidManager.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Scripts/AsteroidScripts/AsteroidManager_BoundaryTool.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Sprites/background.png" type="Texture" id=4]
+[ext_resource path="res://Assets/Scenes/Other/AudioTheme.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Assets/Scripts/GUI/IndividualElements/ScoreLabel.gd" type="Script" id=6]
+[ext_resource path="res://Assets/Scripts/GUI/IndividualElements/HealthLabel.gd" type="Script" id=7]
+[ext_resource path="res://Assets/Scripts/GUI/Menus/PauseMenu.gd" type="Script" id=8]
+[ext_resource path="res://Assets/Themes/GameUI.tres" type="Theme" id=9]
+[ext_resource path="res://Assets/Sprites/Buttons/regularButton.png" type="Texture" id=10]
+[ext_resource path="res://Assets/Fonts/pixelmix-font/PixelmixRegular-z07w.ttf" type="DynamicFontData" id=11]
+[ext_resource path="res://Assets/Audio/Other/explosion02.mp3" type="AudioStream" id=12]
+[ext_resource path="res://Assets/Audio/PlayerSounds/playerHit.mp3" type="AudioStream" id=13]
+[ext_resource path="res://Assets/Audio/PlayerSounds/laser02.mp3" type="AudioStream" id=14]
+[ext_resource path="res://Assets/Audio/Other/explosion03.mp3" type="AudioStream" id=15]
+[ext_resource path="res://Assets/Audio/PlayerSounds/engine.mp3" type="AudioStream" id=16]
+[ext_resource path="res://Assets/Audio/Other/gameOver.mp3" type="AudioStream" id=17]
+[ext_resource path="res://Assets/Audio/PlayerSounds/death.mp3" type="AudioStream" id=18]
+[ext_resource path="res://Assets/Scripts/GUI/Menus/GameOverMenu.gd" type="Script" id=19]
+[ext_resource path="res://Assets/Scripts/GUI/IndividualElements/GameOverScoreDisplay.gd" type="Script" id=20]
+[ext_resource path="res://Assets/Themes/GameMenus.tres" type="Theme" id=21]
+[ext_resource path="res://Assets/Scripts/GUI/IndividualElements/DifficultyBar.gd" type="Script" id=22]
+[ext_resource path="res://Assets/Scripts/GUI/IndividualElements/TimerLabel.gd" type="Script" id=23]
+[ext_resource path="res://Assets/Scripts/GUI/IndividualElements/GunCooldownDisplay.gd" type="Script" id=24]
+[ext_resource path="res://Assets/Audio/Other/maxDiff.mp3" type="AudioStream" id=25]
+
+[sub_resource type="Shader" id=15]
+code = "shader_type canvas_item;
+
+uniform float starPercentage;
+uniform vec4 starColour;
+uniform vec4 backColour;
+
+float random (vec2 uv) {
+    return fract(sin(dot(uv.xy,
+        vec2(12.9898,78.233))) * 43758.5453123);
+}
+
+void fragment() {
+	if (random(UV) < (starPercentage/100.0)) {
+		COLOR = starColour;
+	}
+	else {
+		COLOR = backColour;
+	}
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 15 )
+shader_param/starPercentage = 0.001
+shader_param/starColour = Plane( 1, 1, 0.8, 1 )
+shader_param/backColour = Plane( 0, 0, 0, 1 )
+
+[sub_resource type="StyleBoxFlat" id=21]
+bg_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=22]
+bg_color = Color( 0, 0, 0, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+
+[sub_resource type="Animation" id=25]
+resource_name = "Blink"
+length = 2.1
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"update": 2,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+tracks/1/type = "audio"
+tracks/1/path = NodePath("../../../../AudioGroup/MaxDifficulty")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"clips": [ {
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource( 25 )
+}, {
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource( 25 )
+}, {
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource( 25 )
+}, {
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource( 25 )
+}, {
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource( 25 )
+} ],
+"times": PoolRealArray( 0.2, 0.6, 1, 1.4, 1.8 )
+}
+
+[sub_resource type="Animation" id=26]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=16]
+resource_name = "FadeOut"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
+
+[sub_resource type="Animation" id=17]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="DynamicFont" id=23]
+size = 40
+font_data = ExtResource( 11 )
+
+[sub_resource type="Animation" id=5]
+resource_name = "FadeIn"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("ButtonContainer/ResumeButton:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("ButtonContainer/MenuButton:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("ButtonContainer/QuitButton:disabled")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("ButtonContainer/ResumeButton:mouse_filter")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("ButtonContainer/MenuButton:mouse_filter")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("ButtonContainer/QuitButton:mouse_filter")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath(".:mouse_filter")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "FadeOut"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("ButtonContainer/ResumeButton:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("ButtonContainer/MenuButton:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("ButtonContainer/QuitButton:disabled")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("ButtonContainer/QuitButton:mouse_filter")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("ButtonContainer/MenuButton:mouse_filter")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("ButtonContainer/ResumeButton:mouse_filter")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath(".:mouse_filter")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+
+[sub_resource type="Animation" id=4]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("ButtonContainer/ResumeButton:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ true ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("ButtonContainer/MenuButton:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ true ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("ButtonContainer/QuitButton:disabled")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ true ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("ButtonContainer/ResumeButton:mouse_filter")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 2 ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("ButtonContainer/MenuButton:mouse_filter")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 2 ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("ButtonContainer/QuitButton:mouse_filter")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 2 ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath(".:mouse_filter")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 2 ]
+}
+
+[sub_resource type="DynamicFont" id=24]
+size = 40
+font_data = ExtResource( 11 )
+
+[sub_resource type="DynamicFont" id=27]
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 11 )
+
+[sub_resource type="Animation" id=18]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=19]
+resource_name = "blink"
+length = 0.6
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 2,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
+
+[sub_resource type="Animation" id=20]
+resource_name = "off"
+length = 0.001
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ) ]
+}
+
+[sub_resource type="Animation" id=12]
+resource_name = "FadeIn"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Main/Buttons/MenuButton:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Main/Buttons/QuitButton:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Main/Buttons/MenuButton:mouse_filter")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Main/Buttons/QuitButton:mouse_filter")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath(".:mouse_filter")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Main/Buttons/RestartButton:disabled")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Main/Buttons/RestartButton:mouse_filter")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=13]
+resource_name = "FadeOut"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Main/Buttons/MenuButton:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Main/Buttons/QuitButton:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Main/Buttons/MenuButton:mouse_filter")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Main/Buttons/QuitButton:mouse_filter")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath(".:mouse_filter")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Main/Buttons/RestartButton:disabled")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Main/Buttons/RestartButton:mouse_filter")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0.2 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+
+[sub_resource type="Animation" id=14]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Main/Buttons/MenuButton:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ false ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Main/Buttons/QuitButton:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ false ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Main/Buttons/MenuButton:mouse_filter")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 2 ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("Main/Buttons/QuitButton:mouse_filter")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 2 ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath(".:mouse_filter")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 2 ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Main/Buttons/RestartButton:disabled")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ false ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Main/Buttons/RestartButton:mouse_filter")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 2 ]
+}
+
+[node name="MainGame" type="Node2D"]
+
+[node name="Background" type="Sprite" parent="."]
+material = SubResource( 2 )
+position = Vector2( 2, 1 )
+texture = ExtResource( 4 )
+
+[node name="AudioGroup" type="Node2D" parent="."]
+
+[node name="AudioTheme" parent="AudioGroup" instance=ExtResource( 5 )]
+
+[node name="SmallAsteroidBreak" type="AudioStreamPlayer" parent="AudioGroup" groups=["AudioStream"]]
+stream = ExtResource( 12 )
+volume_db = -15.0
+bus = "SFX"
+
+[node name="LargeAsteroidBreak" type="AudioStreamPlayer" parent="AudioGroup" groups=["AudioStream"]]
+stream = ExtResource( 15 )
+volume_db = -3.0
+bus = "SFX"
+
+[node name="Engine" type="AudioStreamPlayer" parent="AudioGroup" groups=["AudioStream"]]
+stream = ExtResource( 16 )
+bus = "SFX"
+
+[node name="Laser" type="AudioStreamPlayer" parent="AudioGroup" groups=["AudioStream"]]
+stream = ExtResource( 14 )
+volume_db = -5.0
+bus = "SFX"
+
+[node name="PlayerHit" type="AudioStreamPlayer" parent="AudioGroup" groups=["AudioStream"]]
+stream = ExtResource( 13 )
+volume_db = 2.0
+bus = "SFX"
+
+[node name="PlayerDeath" type="AudioStreamPlayer" parent="AudioGroup" groups=["AudioStream"]]
+pause_mode = 2
+stream = ExtResource( 18 )
+bus = "SFX"
+
+[node name="GameOver" type="AudioStreamPlayer" parent="AudioGroup" groups=["AudioStream"]]
+pause_mode = 2
+stream = ExtResource( 17 )
+bus = "SFX"
+
+[node name="MaxDifficulty" type="AudioStreamPlayer" parent="AudioGroup" groups=["AudioStream"]]
+stream = ExtResource( 25 )
+pitch_scale = 1.75
+bus = "SFX"
+
+[node name="GameLayer" type="CanvasLayer" parent="."]
+follow_viewport_enable = true
+
+[node name="Camera2D" type="Camera2D" parent="GameLayer"]
+current = true
+zoom = Vector2( 2, 2 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="GunCooldownDisplay" type="Line2D" parent="GameLayer" groups=["GunCooldownDisplay"]]
+points = PoolVector2Array( -25, 0, 25, 0 )
+width = 2.0
+default_color = Color( 1, 1, 1, 1 )
+script = ExtResource( 24 )
+
+[node name="Player" parent="GameLayer" instance=ExtResource( 1 )]
+light_mask = 2
+
+[node name="BulletParent" type="Node2D" parent="GameLayer" groups=["BulletParent"]]
+
+[node name="ParticleParent" type="Node2D" parent="GameLayer" groups=["ParticleParent"]]
+
+[node name="AsteroidManager" type="Node2D" parent="GameLayer"]
+script = ExtResource( 2 )
+spawnBoundaries = Vector2( 626, 374 )
+defaultSizeChance = 0.5
+startingInterval = 3.0
+minimumInterval = 0.4
+rateOfChange = 0.01
+
+[node name="BoundaryTool" type="Node2D" parent="GameLayer/AsteroidManager"]
+script = ExtResource( 3 )
+run = false
+
+[node name="Timer" type="Timer" parent="GameLayer/AsteroidManager"]
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="GUIGroup" type="Control" parent="UILayer" groups=["GameUI"]]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 9 )
+
+[node name="DifficultyContainer" type="HBoxContainer" parent="UILayer/GUIGroup"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 176.0
+margin_bottom = 18.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="DifficultyLabel" type="Label" parent="UILayer/GUIGroup/DifficultyContainer"]
+margin_right = 58.0
+margin_bottom = 16.0
+size_flags_horizontal = 4
+text = " diff:"
+valign = 1
+uppercase = true
+
+[node name="ProgressBar" type="ProgressBar" parent="UILayer/GUIGroup/DifficultyContainer"]
+margin_left = 62.0
+margin_right = 162.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 100, 15 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+custom_styles/fg = SubResource( 21 )
+custom_styles/bg = SubResource( 22 )
+step = 1.0
+value = 25.0
+percent_visible = false
+script = ExtResource( 22 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="UILayer/GUIGroup/DifficultyContainer/ProgressBar"]
+anims/Blink = SubResource( 25 )
+anims/RESET = SubResource( 26 )
+
+[node name="TimerLabel" type="Label" parent="UILayer/GUIGroup"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -276.0
+margin_top = 5.0
+margin_right = -5.0
+margin_bottom = 18.0
+size_flags_horizontal = 8
+text = "timer: 00:00"
+align = 2
+valign = 1
+uppercase = true
+script = ExtResource( 23 )
+
+[node name="ScoreLabel" type="Label" parent="UILayer/GUIGroup"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -22.0
+margin_right = 155.0
+text = " ScoreLabel"
+valign = 1
+uppercase = true
+script = ExtResource( 6 )
+
+[node name="HealthLabel" type="Label" parent="UILayer/GUIGroup"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -208.0
+margin_top = -22.0
+size_flags_horizontal = 4
+text = " HealthLabel"
+align = 2
+valign = 1
+uppercase = true
+script = ExtResource( 7 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="UILayer/GUIGroup"]
+pause_mode = 2
+anims/FadeOut = SubResource( 16 )
+anims/RESET = SubResource( 17 )
+
+[node name="PauseLayer" type="CanvasLayer" parent="."]
+pause_mode = 2
+layer = 3
+
+[node name="PauseMenu" type="Control" parent="PauseLayer"]
+modulate = Color( 1, 1, 1, 0 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme = ExtResource( 21 )
+script = ExtResource( 8 )
+
+[node name="ScreenTint" type="ColorRect" parent="PauseLayer/PauseMenu"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color( 0, 0, 0, 0.686275 )
+
+[node name="Title" type="Label" parent="PauseLayer/PauseMenu"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -207.0
+margin_top = 11.0
+margin_right = 211.0
+margin_bottom = 65.0
+custom_fonts/font = SubResource( 23 )
+text = "Paused"
+align = 1
+valign = 1
+uppercase = true
+
+[node name="HighScoreLabel" type="Label" parent="PauseLayer/PauseMenu"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -207.0
+margin_top = 77.0
+margin_right = 211.0
+margin_bottom = 131.0
+custom_colors/font_color = Color( 0.898039, 1, 0, 1 )
+text = "high score:0"
+align = 1
+valign = 1
+
+[node name="ButtonContainer" type="VBoxContainer" parent="PauseLayer/PauseMenu"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -131.0
+margin_top = -35.0
+margin_right = 131.0
+margin_bottom = 125.0
+
+[node name="ResumeButton" type="TextureButton" parent="PauseLayer/PauseMenu/ButtonContainer"]
+margin_left = 56.0
+margin_right = 206.0
+margin_bottom = 35.0
+rect_min_size = Vector2( 150, 35 )
+focus_mode = 0
+mouse_filter = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+disabled = true
+enabled_focus_mode = 0
+texture_hover = ExtResource( 10 )
+expand = true
+
+[node name="Label" type="Label" parent="PauseLayer/PauseMenu/ButtonContainer/ResumeButton"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -54.0
+margin_top = -12.0
+margin_right = 54.0
+margin_bottom = 12.0
+text = "resume"
+align = 1
+valign = 1
+
+[node name="MenuButton" type="TextureButton" parent="PauseLayer/PauseMenu/ButtonContainer"]
+margin_left = 56.0
+margin_top = 39.0
+margin_right = 206.0
+margin_bottom = 74.0
+rect_min_size = Vector2( 150, 35 )
+focus_mode = 0
+mouse_filter = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+disabled = true
+enabled_focus_mode = 0
+texture_hover = ExtResource( 10 )
+expand = true
+
+[node name="Label" type="Label" parent="PauseLayer/PauseMenu/ButtonContainer/MenuButton"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -36.0
+margin_top = -12.0
+margin_right = 36.0
+margin_bottom = 12.0
+text = "menu"
+align = 1
+valign = 1
+
+[node name="QuitButton" type="TextureButton" parent="PauseLayer/PauseMenu/ButtonContainer"]
+margin_left = 56.0
+margin_top = 78.0
+margin_right = 206.0
+margin_bottom = 113.0
+rect_min_size = Vector2( 150, 35 )
+focus_mode = 0
+mouse_filter = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+disabled = true
+enabled_focus_mode = 0
+texture_hover = ExtResource( 10 )
+expand = true
+
+[node name="Label" type="Label" parent="PauseLayer/PauseMenu/ButtonContainer/QuitButton"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -33.0
+margin_top = -12.0
+margin_right = 33.0
+margin_bottom = 12.0
+text = "quit"
+align = 1
+valign = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="PauseLayer/PauseMenu"]
+anims/FadeIn = SubResource( 5 )
+anims/FadeOut = SubResource( 3 )
+anims/RESET = SubResource( 4 )
+
+[node name="GameOverLayer" type="CanvasLayer" parent="."]
+layer = 4
+
+[node name="GameOver" type="Control" parent="GameOverLayer"]
+pause_mode = 2
+modulate = Color( 1, 1, 1, 0 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme = ExtResource( 21 )
+script = ExtResource( 19 )
+
+[node name="ScreenTint" type="ColorRect" parent="GameOverLayer/GameOver"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color( 0, 0, 0, 0.686275 )
+
+[node name="Title" type="Label" parent="GameOverLayer/GameOver"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -207.0
+margin_top = 2.0
+margin_right = 211.0
+margin_bottom = 89.0
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+custom_fonts/font = SubResource( 24 )
+text = "GAME OVER"
+align = 1
+valign = 1
+uppercase = true
+
+[node name="Main" type="HBoxContainer" parent="GameOverLayer/GameOver"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -272.0
+margin_top = -80.0
+margin_right = 272.0
+margin_bottom = 150.0
+mouse_filter = 2
+custom_constants/separation = 15
+alignment = 1
+
+[node name="ScoreDisplay" type="VBoxContainer" parent="GameOverLayer/GameOver/Main" groups=["GameOverScoreDisplay"]]
+margin_left = 66.0
+margin_top = 24.0
+margin_right = 292.0
+margin_bottom = 206.0
+mouse_filter = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+custom_constants/separation = 25
+alignment = 1
+script = ExtResource( 20 )
+
+[node name="Score" type="Label" parent="GameOverLayer/GameOver/Main/ScoreDisplay"]
+margin_right = 226.0
+margin_bottom = 16.0
+text = "score:0"
+align = 1
+valign = 1
+
+[node name="HighScore" type="Label" parent="GameOverLayer/GameOver/Main/ScoreDisplay"]
+margin_top = 41.0
+margin_right = 226.0
+margin_bottom = 57.0
+text = "high score:0"
+align = 1
+valign = 1
+
+[node name="DifficultyContainer" type="HBoxContainer" parent="GameOverLayer/GameOver/Main/ScoreDisplay"]
+margin_top = 82.0
+margin_right = 226.0
+margin_bottom = 100.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="DifficultyLabel" type="Label" parent="GameOverLayer/GameOver/Main/ScoreDisplay/DifficultyContainer"]
+margin_top = 1.0
+margin_right = 122.0
+margin_bottom = 17.0
+size_flags_horizontal = 4
+text = " difficulty:"
+valign = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="GameOverLayer/GameOver/Main/ScoreDisplay/DifficultyContainer"]
+margin_left = 126.0
+margin_right = 226.0
+margin_bottom = 18.0
+rect_min_size = Vector2( 100, 15 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 27 )
+custom_styles/fg = SubResource( 21 )
+custom_styles/bg = SubResource( 22 )
+step = 1.0
+value = 100.0
+
+[node name="Time" type="Label" parent="GameOverLayer/GameOver/Main/ScoreDisplay"]
+margin_top = 125.0
+margin_right = 226.0
+margin_bottom = 141.0
+text = "time: 00"
+align = 1
+valign = 1
+
+[node name="NewHighScore" type="Label" parent="GameOverLayer/GameOver/Main/ScoreDisplay"]
+margin_top = 166.0
+margin_right = 226.0
+margin_bottom = 182.0
+custom_colors/font_color = Color( 0.968627, 1, 0, 1 )
+text = "new high score"
+align = 1
+valign = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="GameOverLayer/GameOver/Main/ScoreDisplay/NewHighScore"]
+autoplay = "off"
+anims/RESET = SubResource( 18 )
+anims/blink = SubResource( 19 )
+anims/off = SubResource( 20 )
+
+[node name="Divider" type="ColorRect" parent="GameOverLayer/GameOver/Main"]
+margin_left = 307.0
+margin_right = 312.0
+margin_bottom = 230.0
+rect_min_size = Vector2( 5, 0 )
+mouse_filter = 2
+
+[node name="Buttons" type="VBoxContainer" parent="GameOverLayer/GameOver/Main"]
+margin_left = 327.0
+margin_top = 62.0
+margin_right = 477.0
+margin_bottom = 167.0
+mouse_filter = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+custom_constants/separation = 0
+
+[node name="RestartButton" type="TextureButton" parent="GameOverLayer/GameOver/Main/Buttons"]
+margin_right = 150.0
+margin_bottom = 35.0
+rect_min_size = Vector2( 150, 35 )
+focus_mode = 0
+mouse_filter = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+enabled_focus_mode = 0
+texture_hover = ExtResource( 10 )
+expand = true
+
+[node name="Label" type="Label" parent="GameOverLayer/GameOver/Main/Buttons/RestartButton"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -63.0
+margin_top = -12.0
+margin_right = 63.0
+margin_bottom = 12.0
+size_flags_horizontal = 4
+text = "restart"
+align = 1
+valign = 1
+
+[node name="MenuButton" type="TextureButton" parent="GameOverLayer/GameOver/Main/Buttons"]
+margin_top = 35.0
+margin_right = 150.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 150, 35 )
+focus_mode = 0
+mouse_filter = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+enabled_focus_mode = 0
+texture_hover = ExtResource( 10 )
+expand = true
+
+[node name="Label" type="Label" parent="GameOverLayer/GameOver/Main/Buttons/MenuButton"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -36.0
+margin_top = -12.0
+margin_right = 36.0
+margin_bottom = 12.0
+size_flags_horizontal = 4
+text = "menu"
+align = 1
+valign = 1
+
+[node name="QuitButton" type="TextureButton" parent="GameOverLayer/GameOver/Main/Buttons"]
+margin_top = 70.0
+margin_right = 150.0
+margin_bottom = 105.0
+rect_min_size = Vector2( 150, 35 )
+focus_mode = 0
+mouse_filter = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+enabled_focus_mode = 0
+texture_hover = ExtResource( 10 )
+expand = true
+
+[node name="Label" type="Label" parent="GameOverLayer/GameOver/Main/Buttons/QuitButton"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -33.0
+margin_top = -12.0
+margin_right = 33.0
+margin_bottom = 12.0
+text = "quit"
+align = 1
+valign = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="GameOverLayer/GameOver" groups=["GameOverAnimator"]]
+anims/FadeIn = SubResource( 12 )
+anims/FadeOut = SubResource( 13 )
+anims/RESET = SubResource( 14 )
+
+[connection signal="timeout" from="GameLayer/AsteroidManager/Timer" to="GameLayer/AsteroidManager" method="_on_Timer_timeout"]
+[connection signal="pressed" from="PauseLayer/PauseMenu/ButtonContainer/ResumeButton" to="PauseLayer/PauseMenu" method="_on_ResumeButton_pressed"]
+[connection signal="pressed" from="PauseLayer/PauseMenu/ButtonContainer/MenuButton" to="PauseLayer/PauseMenu" method="_on_MenuButton_pressed"]
+[connection signal="pressed" from="PauseLayer/PauseMenu/ButtonContainer/QuitButton" to="PauseLayer/PauseMenu" method="_on_QuitButton_pressed"]
+[connection signal="pressed" from="GameOverLayer/GameOver/Main/Buttons/RestartButton" to="GameOverLayer/GameOver" method="_on_RestartButton_pressed"]
+[connection signal="pressed" from="GameOverLayer/GameOver/Main/Buttons/MenuButton" to="GameOverLayer/GameOver" method="_on_MenuButton_pressed"]
+[connection signal="pressed" from="GameOverLayer/GameOver/Main/Buttons/QuitButton" to="GameOverLayer/GameOver" method="_on_QuitButton_pressed"]

@@ -1,0 +1,40 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Assets/Sprites/particle.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Scripts/AsteroidScripts/AsteroidParticles.gd" type="Script" id=2]
+
+[sub_resource type="Gradient" id=3]
+offsets = PoolRealArray( 0.521739, 0.906832 )
+colors = PoolColorArray( 1, 1, 1, 1, 0.0901961, 0.0901961, 0.0901961, 0 )
+
+[sub_resource type="GradientTexture" id=4]
+gradient = SubResource( 3 )
+
+[sub_resource type="Curve" id=6]
+_data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 0.728261, 0.159091 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=7]
+curve = SubResource( 6 )
+
+[sub_resource type="ParticlesMaterial" id=5]
+lifetime_randomness = 0.5
+flag_disable_z = true
+spread = 180.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 100.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+damping = 100.0
+scale = 0.3
+scale_curve = SubResource( 7 )
+color_ramp = SubResource( 4 )
+
+[node name="AsteroidParticles" type="Particles2D" groups=["Particle"]]
+z_index = 1
+emitting = false
+amount = 32
+one_shot = true
+explosiveness = 0.8
+process_material = SubResource( 5 )
+texture = ExtResource( 1 )
+script = ExtResource( 2 )

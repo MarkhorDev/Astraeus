@@ -1,0 +1,139 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://Assets/Sprites/Buttons/regularButton.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Scenes/Other/AudioTheme.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Assets/Audio/Music/optionsTheme.mp3" type="AudioStream" id=3]
+[ext_resource path="res://Assets/Scripts/GUI/IndividualElements/MenuButton.gd" type="Script" id=4]
+[ext_resource path="res://Assets/Themes/OptionsMenu.tres" type="Theme" id=5]
+[ext_resource path="res://Assets/Fonts/pixelmix-font/PixelmixRegular-z07w.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://Assets/Sprites/background.png" type="Texture" id=7]
+
+[sub_resource type="Shader" id=7]
+code = "shader_type canvas_item;
+
+uniform float starPercentage;
+uniform vec4 starColour;
+uniform vec4 backColour;
+
+float random (vec2 uv) {
+    return fract(sin(dot(uv.xy,
+        vec2(12.9898,78.233))) * 43758.5453123);
+}
+
+void fragment() {
+	if (random(UV) < (starPercentage/100.0)) {
+		COLOR = starColour;
+	}
+	else {
+		COLOR = backColour;
+	}
+}"
+
+[sub_resource type="ShaderMaterial" id=10]
+shader = SubResource( 7 )
+shader_param/starPercentage = 0.001
+shader_param/starColour = Plane( 1, 1, 0.8, 1 )
+shader_param/backColour = Plane( 0, 0, 0, 1 )
+
+[sub_resource type="DynamicFont" id=15]
+size = 32
+font_data = ExtResource( 6 )
+
+[sub_resource type="DynamicFont" id=17]
+size = 8
+font_data = ExtResource( 6 )
+
+[sub_resource type="DynamicFont" id=16]
+size = 24
+font_data = ExtResource( 6 )
+
+[node name="Options" type="Node2D"]
+
+[node name="AudioTheme" parent="." instance=ExtResource( 2 )]
+stream = ExtResource( 3 )
+
+[node name="Background" type="Sprite" parent="."]
+material = SubResource( 10 )
+position = Vector2( 2, 1 )
+scale = Vector2( 2.01111, 2.01111 )
+texture = ExtResource( 7 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+zoom = Vector2( 2, 2 )
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+pause_mode = 2
+layer = 2
+
+[node name="Menu" type="Control" parent="UILayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 5 )
+
+[node name="Title" type="Label" parent="UILayer/Menu"]
+anchor_right = 1.0
+margin_top = 17.0
+margin_bottom = 65.0
+custom_fonts/font = SubResource( 15 )
+text = "HOW TO PLAY"
+align = 1
+valign = 1
+
+[node name="InsutrctionPanel" type="Panel" parent="UILayer/Menu"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -279.0
+margin_top = -86.0
+margin_right = 279.0
+margin_bottom = 109.0
+
+[node name="Instructions" type="Label" parent="UILayer/Menu/InsutrctionPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = SubResource( 17 )
+text = "Fly around and dodge asteroids. Shoot them to break them apart.
+'W' to move forwards. 'S' to brake. 'A' & 'D' to rotate.
+'Click' or 'Space' to shoot.
+
+The colour of the players bullets and the colour of the ships trail can be changed in the options.
+You rotate faster when moving forwards. You can rotate slower, if stationary, by holding shift.
+
+The player gun has a cooldown, of which the display can be toggled in the options.
+The laser sight can also be toggled in the options, or the colour can be changed.
+
+The game gradually gets more difficult, with asteroids spawning quicker.
+The difficulty bar and timer can be toggled in settings.
+
+While you can get away with staying still in the early game, you must move around to dodge asteroids in the later game."
+align = 1
+valign = 1
+autowrap = true
+
+[node name="MenuButton" type="TextureButton" parent="UILayer/Menu"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -38.0
+margin_right = 96.0
+texture_hover = ExtResource( 1 )
+expand = true
+stretch_mode = 1
+script = ExtResource( 4 )
+
+[node name="Label" type="Label" parent="UILayer/Menu/MenuButton"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -36.0
+margin_top = -12.0
+margin_right = 36.0
+margin_bottom = 12.0
+custom_fonts/font = SubResource( 16 )
+text = "menu"
+align = 1
+valign = 1
+
+[connection signal="pressed" from="UILayer/Menu/MenuButton" to="UILayer/Menu/MenuButton" method="_on_pressed"]
